@@ -212,6 +212,7 @@ print df_sundays['total_amount'].tolist()[-1]
 print "saturday is "
 print df_sundays['total_amount'].tolist()[-2]
 
+print "Individual models are being trained for individual days, please wait >>>>>>>"
 
 
 
@@ -291,7 +292,7 @@ t_i as (
   	and grade not ilike '%us%'
       and poi_arrive!=0
       and date_arrive>='2016-05-28'
-      and date_run::date='2016-08-08'
+      and date_run::date='2016-08-15'
   group by date_arrive
   order by 2
 )
@@ -376,7 +377,7 @@ t_i as (
   	and grade not ilike '%us%'
       and poi_arrive!=0
       and date_arrive>='2016-05-28'
-      and date_run::date='2016-08-08'
+      and date_run::date='2016-08-15'
   group by date_arrive
   order by 2
 )
@@ -461,7 +462,7 @@ t_i as (
   	and grade not ilike '%us%'
       and poi_arrive!=0
       and date_arrive>='2016-05-28'
-      and date_run::date='2016-08-08'
+      and date_run::date='2016-08-15'
   group by date_arrive
   order by 2
 )
@@ -547,7 +548,7 @@ t_i as (
   	and grade not ilike '%us%'
       and poi_arrive!=0
       and date_arrive>='2016-05-28'
-      and date_run::date='2016-08-08'
+      and date_run::date='2016-08-15'
   group by date_arrive
   order by 2
 )
@@ -772,7 +773,7 @@ t_i as (
   	and grade not ilike '%us%'
       and poi_arrive!=0
       and date_arrive>='2016-05-28'
-      and date_run::date='2016-08-09'
+      and date_run::date='2016-08-15'
   group by date_arrive
   order by 2
 )
@@ -791,7 +792,7 @@ left join t_d t_dd
 on t_ss.date_run= t_dd.estimated_date
 left join t_i t_ii
 on t_bb.date_arrive=t_ii.date_arrive)
-select * from table_tuesday where estimated_monday='2016-08-08'
+select * from table_tuesday where estimated_monday='2016-08-15'
 """
 
 
@@ -807,7 +808,7 @@ saturday_import=df_sundays['total_amount'].tolist()[-2]
 ### This is where I get the sunday and saturday import values.
 
 df_test_tuesday=read_sql(sql_predict_tuesday,con_dev)
-
+df_test_tuesday['friday_estimated_import'].fillna(0, inplace=True)
 for i,item in enumerate(df_test_tuesday['date_arrive']):
 	TEST_TUES_VOL_1.append((monday_predicted-sunday_import)/float(monday_predicted))
 	TEST_TUES_VOL_2.append((monday_predicted-saturday_import)/float(monday_predicted))
@@ -819,7 +820,7 @@ df_test_tuesday['VOL_2']=TEST_TUES_VOL_2
 TEST_TUES_VAR=np.matrix(np.asarray([df_test_tuesday['tuesday_estimated_import'].tolist(),df_test_tuesday['wednesday_estimated_import'].tolist(),df_test_tuesday['thursday_estimated_import'].tolist(),df_test_tuesday['friday_estimated_import'].tolist(),df_test_tuesday['storage_zone'].tolist(),df_test_tuesday['VOL_1'].tolist(),df_test_tuesday['VOL_2'].tolist()])).T
 TEST_TUES_PREDICTED=tues_ranf.predict(TEST_TUES_VAR)
 print "The predicted result for tuesday is as below: "
-print TEST_TUES_PREDICTED
+print TEST_TUES_PREDICTED[0]
 
 
 ### The following si the actual prediction for wednesday.
@@ -837,7 +838,7 @@ df_test_wednesday['VOL_2']=TEST_TUES_VOL_2
 TEST_WED_VAR=np.matrix(np.asarray([df_test_tuesday['tuesday_estimated_import'].tolist(),df_test_tuesday['wednesday_estimated_import'].tolist(),df_test_tuesday['thursday_estimated_import'].tolist(),df_test_tuesday['friday_estimated_import'].tolist(),df_test_tuesday['storage_zone'].tolist(),df_test_tuesday['VOL_1'].tolist(),df_test_tuesday['VOL_2'].tolist()])).T
 TEST_WED_PREDICTED=wed_ranf.predict(TEST_WED_VAR)
 print "The predicted result for wednesday is as below: "
-print TEST_WED_PREDICTED
+print TEST_WED_PREDICTED[0]
 
 
 ### The following si the actual prediction for thursday.
@@ -855,7 +856,7 @@ df_test_thursday['VOL_2']=TEST_TUES_VOL_2
 TEST_THUR_VAR=np.matrix(np.asarray([df_test_tuesday['tuesday_estimated_import'].tolist(),df_test_tuesday['wednesday_estimated_import'].tolist(),df_test_tuesday['thursday_estimated_import'].tolist(),df_test_tuesday['friday_estimated_import'].tolist(),df_test_tuesday['storage_zone'].tolist(),df_test_tuesday['VOL_1'].tolist(),df_test_tuesday['VOL_2'].tolist()])).T
 TEST_THUR_PREDICTED=thur_ranf.predict(TEST_THUR_VAR)
 print "The predicted result for thursday is as below: "
-print TEST_THUR_PREDICTED
+print TEST_THUR_PREDICTED[0]
 
 ### The following si the actual prediction for friday
 df_test_friday=read_sql(sql_predict_tuesday,con_dev)
@@ -872,9 +873,9 @@ df_test_friday['VOL_2']=TEST_TUES_VOL_2
 TEST_FRI_VAR=np.matrix(np.asarray([df_test_tuesday['tuesday_estimated_import'].tolist(),df_test_tuesday['wednesday_estimated_import'].tolist(),df_test_tuesday['thursday_estimated_import'].tolist(),df_test_tuesday['friday_estimated_import'].tolist(),df_test_tuesday['storage_zone'].tolist(),df_test_tuesday['VOL_1'].tolist(),df_test_tuesday['VOL_2'].tolist()])).T
 TEST_FRI_PREDICTED=fri_ranf.predict(TEST_FRI_VAR)
 print "The predicted result for friday is as below: "
-print TEST_FRI_PREDICTED
+print TEST_FRI_PREDICTED[0]
 print "Overall sum for this is expected to be:"
-print sum([monday_predicted, sunday_import, saturday_import, TEST_WED_PREDICTED,TEST_TUES_PREDICTED, TEST_THUR_PREDICTED,TEST_FRI_PREDICTED])
+print sum([monday_predicted, sunday_import, saturday_import, TEST_WED_PREDICTED[0],TEST_TUES_PREDICTED[0], TEST_THUR_PREDICTED[0],TEST_FRI_PREDICTED[0]])
 print "Daily Average for this week is expected to be:"
-print sum([monday_predicted, sunday_import, saturday_import, TEST_WED_PREDICTED,TEST_TUES_PREDICTED, TEST_THUR_PREDICTED,TEST_FRI_PREDICTED])/7
+print sum([monday_predicted, sunday_import, saturday_import, TEST_WED_PREDICTED[0],TEST_TUES_PREDICTED[0], TEST_THUR_PREDICTED[0],TEST_FRI_PREDICTED[0]])/7
 print "My program took", (time.time() - start_time)/60, "minutes to run"
