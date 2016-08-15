@@ -602,8 +602,12 @@ TUES_IND=np.matrix(np.asarray(df_overall_tuesday['imported_value'].tolist())).T
 
 print TUES_IND.shape
 print TUES_VAR.shape
-tues_regr=linear_model.LinearRegression()
-tues_regr.fit(TUES_VAR,TUES_IND)
+#tues_regr=linear_model.LinearRegression()
+#tues_regr.fit(TUES_VAR,TUES_IND)
+
+tues_ranf=ensemble.AdaBoostRegressor(RandomForestRegressor(),n_estimators=80)
+tues_ranf.fit(TUES_VAR,TUES_IND)
+
 
 ### So far, the model is already trained.
 
@@ -628,8 +632,12 @@ df_overall_wednesday['VOL_2']=WED_VOL_2
 WED_VAR=np.matrix(np.asarray([df_overall_wednesday['tuesday_estimated_import'].tolist(),df_overall_tuesday['wednesday_estimated_import'].tolist(),df_overall_tuesday['thursday_estimated_import'].tolist(),df_overall_tuesday['friday_estimated_import'].tolist(),df_overall_tuesday['storage_zone'].tolist(),df_overall_tuesday['VOL_1'].tolist(),df_overall_tuesday['VOL_2'].tolist()])).T
 WED_IND=np.matrix(np.asarray(df_overall_wednesday['imported_value'].tolist())).T
 
-wed_regr=linear_model.LinearRegression()
-wed_regr.fit(WED_VAR,WED_IND)
+#wed_regr=linear_model.LinearRegression()
+#wed_regr.fit(WED_VAR,WED_IND)
+
+wed_ranf=ensemble.AdaBoostRegressor(RandomForestRegressor(),n_estimators=80)
+wed_ranf.fit(WED_VAR,WED_IND)
+
 print "Wednesdays model is taken care of."
 
 
@@ -653,8 +661,12 @@ df_overall_thursday['VOL_2']=THUR_VOL_2
 THUR_VAR=np.matrix(np.asarray([df_overall_thursday['tuesday_estimated_import'].tolist(),df_overall_tuesday['wednesday_estimated_import'].tolist(),df_overall_tuesday['thursday_estimated_import'].tolist(),df_overall_tuesday['friday_estimated_import'].tolist(),df_overall_tuesday['storage_zone'].tolist(),df_overall_tuesday['VOL_1'].tolist(),df_overall_tuesday['VOL_2'].tolist()])).T
 THUR_IND=np.matrix(np.asarray(df_overall_thursday['imported_value'].tolist())).T
 
-thur_regr=linear_model.LinearRegression()
-thur_regr.fit(THUR_VAR,THUR_IND)
+#thur_regr=linear_model.LinearRegression()
+#thur_regr.fit(THUR_VAR,THUR_IND)
+
+thur_ranf=ensemble.AdaBoostRegressor(RandomForestRegressor(),n_estimators=80)
+thur_ranf.fit(THUR_VAR,THUR_IND)
+
 print "Thursday model is taken care of."
 
 
@@ -682,8 +694,11 @@ df_overall_friday['VOL_2']=FRI_VOL_2
 FRI_VAR=np.matrix(np.asarray([df_overall_friday['tuesday_estimated_import'].tolist(),df_overall_tuesday['wednesday_estimated_import'].tolist(),df_overall_tuesday['thursday_estimated_import'].tolist(),df_overall_tuesday['friday_estimated_import'].tolist(),df_overall_tuesday['storage_zone'].tolist(),df_overall_tuesday['VOL_1'].tolist(),df_overall_tuesday['VOL_2'].tolist()])).T
 FRI_IND=np.matrix(np.asarray(df_overall_friday['imported_value'].tolist())).T
 
-fri_regr=linear_model.LinearRegression()
-fri_regr.fit(FRI_VAR,FRI_IND)
+fri_ranf=ensemble.AdaBoostRegressor(RandomForestRegressor(),n_estimators=80)
+fri_ranf.fit(FRI_VAR,FRI_IND)
+
+
+
 print "Friday model is taken care of."
 
 
@@ -802,9 +817,9 @@ df_test_tuesday['VOL_2']=TEST_TUES_VOL_2
 # print df_overall_tuesday
 #M=[df_overall_tuesday['tuesday_estimated_import'].tolist(),df_overall_tuesday['wednesday_estimated_import'].tolist(),df_overall_tuesday['thursday_estimated_import'].tolist(),df_overall_tuesday['friday_estimated_import'].tolist(),df_overall_tuesday['storage_zone'].tolist(),df_overall_tuesday['VOL_1'].tolist(),df_overall_tuesday['VOL_2'].tolist()]
 TEST_TUES_VAR=np.matrix(np.asarray([df_test_tuesday['tuesday_estimated_import'].tolist(),df_test_tuesday['wednesday_estimated_import'].tolist(),df_test_tuesday['thursday_estimated_import'].tolist(),df_test_tuesday['friday_estimated_import'].tolist(),df_test_tuesday['storage_zone'].tolist(),df_test_tuesday['VOL_1'].tolist(),df_test_tuesday['VOL_2'].tolist()])).T
-TEST_TUES_PREDICTED=tues_regr.predict(TEST_TUES_VAR)
+TEST_TUES_PREDICTED=tues_ranf.predict(TEST_TUES_VAR)
 print "The predicted result for tuesday is as below: "
-print TEST_TUES_PREDICTED[0][0]
+print TEST_TUES_PREDICTED
 
 
 ### The following si the actual prediction for wednesday.
@@ -820,9 +835,9 @@ df_test_wednesday['VOL_2']=TEST_TUES_VOL_2
 # print df_overall_tuesday
 #M=[df_overall_tuesday['tuesday_estimated_import'].tolist(),df_overall_tuesday['wednesday_estimated_import'].tolist(),df_overall_tuesday['thursday_estimated_import'].tolist(),df_overall_tuesday['friday_estimated_import'].tolist(),df_overall_tuesday['storage_zone'].tolist(),df_overall_tuesday['VOL_1'].tolist(),df_overall_tuesday['VOL_2'].tolist()]
 TEST_WED_VAR=np.matrix(np.asarray([df_test_tuesday['tuesday_estimated_import'].tolist(),df_test_tuesday['wednesday_estimated_import'].tolist(),df_test_tuesday['thursday_estimated_import'].tolist(),df_test_tuesday['friday_estimated_import'].tolist(),df_test_tuesday['storage_zone'].tolist(),df_test_tuesday['VOL_1'].tolist(),df_test_tuesday['VOL_2'].tolist()])).T
-TEST_WED_PREDICTED=wed_regr.predict(TEST_WED_VAR)
+TEST_WED_PREDICTED=wed_ranf.predict(TEST_WED_VAR)
 print "The predicted result for wednesday is as below: "
-print TEST_WED_PREDICTED[0][0]
+print TEST_WED_PREDICTED
 
 
 ### The following si the actual prediction for thursday.
@@ -838,9 +853,9 @@ df_test_thursday['VOL_2']=TEST_TUES_VOL_2
 # print df_overall_tuesday
 #M=[df_overall_tuesday['tuesday_estimated_import'].tolist(),df_overall_tuesday['wednesday_estimated_import'].tolist(),df_overall_tuesday['thursday_estimated_import'].tolist(),df_overall_tuesday['friday_estimated_import'].tolist(),df_overall_tuesday['storage_zone'].tolist(),df_overall_tuesday['VOL_1'].tolist(),df_overall_tuesday['VOL_2'].tolist()]
 TEST_THUR_VAR=np.matrix(np.asarray([df_test_tuesday['tuesday_estimated_import'].tolist(),df_test_tuesday['wednesday_estimated_import'].tolist(),df_test_tuesday['thursday_estimated_import'].tolist(),df_test_tuesday['friday_estimated_import'].tolist(),df_test_tuesday['storage_zone'].tolist(),df_test_tuesday['VOL_1'].tolist(),df_test_tuesday['VOL_2'].tolist()])).T
-TEST_THUR_PREDICTED=thur_regr.predict(TEST_THUR_VAR)
+TEST_THUR_PREDICTED=thur_ranf.predict(TEST_THUR_VAR)
 print "The predicted result for thursday is as below: "
-print TEST_THUR_PREDICTED[0][0]
+print TEST_THUR_PREDICTED
 
 ### The following si the actual prediction for friday
 df_test_friday=read_sql(sql_predict_tuesday,con_dev)
@@ -855,11 +870,11 @@ df_test_friday['VOL_2']=TEST_TUES_VOL_2
 # print df_overall_tuesday
 #M=[df_overall_tuesday['tuesday_estimated_import'].tolist(),df_overall_tuesday['wednesday_estimated_import'].tolist(),df_overall_tuesday['thursday_estimated_import'].tolist(),df_overall_tuesday['friday_estimated_import'].tolist(),df_overall_tuesday['storage_zone'].tolist(),df_overall_tuesday['VOL_1'].tolist(),df_overall_tuesday['VOL_2'].tolist()]
 TEST_FRI_VAR=np.matrix(np.asarray([df_test_tuesday['tuesday_estimated_import'].tolist(),df_test_tuesday['wednesday_estimated_import'].tolist(),df_test_tuesday['thursday_estimated_import'].tolist(),df_test_tuesday['friday_estimated_import'].tolist(),df_test_tuesday['storage_zone'].tolist(),df_test_tuesday['VOL_1'].tolist(),df_test_tuesday['VOL_2'].tolist()])).T
-TEST_FRI_PREDICTED=fri_regr.predict(TEST_FRI_VAR)
+TEST_FRI_PREDICTED=fri_ranf.predict(TEST_FRI_VAR)
 print "The predicted result for friday is as below: "
-print TEST_FRI_PREDICTED[0][0]
+print TEST_FRI_PREDICTED
 print "Overall sum for this is expected to be:"
-print sum([monday_predicted, sunday_import, saturday_import, TEST_WED_PREDICTED[0][0],TEST_TUES_PREDICTED[0][0], TEST_THUR_PREDICTED[0][0],TEST_FRI_PREDICTED[0][0]])
+print sum([monday_predicted, sunday_import, saturday_import, TEST_WED_PREDICTED,TEST_TUES_PREDICTED, TEST_THUR_PREDICTED,TEST_FRI_PREDICTED])
 print "Daily Average for this week is expected to be:"
-print sum([monday_predicted, sunday_import, saturday_import, TEST_WED_PREDICTED[0][0],TEST_TUES_PREDICTED[0][0], TEST_THUR_PREDICTED[0][0],TEST_FRI_PREDICTED[0][0]])/7
+print sum([monday_predicted, sunday_import, saturday_import, TEST_WED_PREDICTED,TEST_TUES_PREDICTED, TEST_THUR_PREDICTED,TEST_FRI_PREDICTED])/7
 print "My program took", (time.time() - start_time)/60, "minutes to run"
