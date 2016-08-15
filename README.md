@@ -1,1 +1,1 @@
-# ClipperData
+# ClipperData prediction model
