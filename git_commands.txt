@@ -1,0 +1,9 @@
+git commands :
+
+
+
+
+
+git remote add remote_master git@github.com:kashkalik/ClipperData_Prediction.git
+
+git branch --set-upstream remote_master master
